@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/mdp/qrterminal"
@@ -80,8 +81,11 @@ func (mycli *MyClient) myEventHandler(evt interface{}) {
 	switch v := evt.(type) {
 	case *events.Message:
 		message := v.Message.GetConversation()
+		messagesID := []string{v.Info.ID}
 		fmt.Println(message)
 		if message != "" && len(message) != 0 {
+			fmt.Println(v)
+			mycli.WAClient.MarkRead(messagesID, time.Now(), v.Info.MessageSource.Chat, v.Info.MessageSource.Sender)
 
 			x := "Holi"
 			mycli.WAClient.SendMessage(context.TODO(), v.Info.MessageSource.Chat, "", &waProto.Message{
